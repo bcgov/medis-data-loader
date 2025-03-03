@@ -26,14 +26,13 @@ public class DeleteFilesTasklet implements Tasklet {
 
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
-		System.out.println("Deleting sftp files");
 
 		ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
 
 		@SuppressWarnings("unchecked")
 		List<String> sftpFiles = (List<String>) executionContext.get("sftpFiles");
 		if (sftpFiles != null) {
-			logger.debug("Found {} files to delete", sftpFiles.size());
+			logger.info("Found {} files to delete", sftpFiles.size());
 			sftpFiles.forEach(sftpFile -> {
 				logger.debug("Deleting file {}", sftpFile);
 				sftpService.removeFile(sftpFile);

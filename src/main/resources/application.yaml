@@ -30,6 +30,9 @@ spring:
 batch:
    cron:
    
+mail:
+   enabled: false
+   
 sftp:
    hostname: 
    key: 
