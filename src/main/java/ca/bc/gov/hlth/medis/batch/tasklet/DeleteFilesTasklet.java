@@ -1,6 +1,8 @@
 package ca.bc.gov.hlth.medis.batch.tasklet;
 
 import static ca.bc.gov.hlth.medis.util.Constants.SFTP_WAIT;
+
+import java.io.File;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,17 +26,28 @@ public class DeleteFilesTasklet implements Tasklet {
 	@Autowired
 	private SFTPService sftpService;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
 		ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
 
-		@SuppressWarnings("unchecked")
+		// Remove local files
+		List<File> importFiles = (List<File>) executionContext.get("importFiles");
+		if (importFiles != null) {
+			logger.debug("Found {} Temp files to delete", importFiles.size());
+			importFiles.forEach(file -> {
+				logger.debug("Deleting Temp file {}", file);
+				file.delete();
+			});
+		}
+		
+		// Remove SFTP files
 		List<String> sftpFiles = (List<String>) executionContext.get("sftpFiles");
 		if (sftpFiles != null) {
-			logger.info("Found {} files to delete", sftpFiles.size());
+			logger.debug("Found {} SFTP files to delete", sftpFiles.size());
 			sftpFiles.forEach(sftpFile -> {
-				logger.debug("Deleting file {}", sftpFile);
+				logger.debug("Deleting SFTP file {}", sftpFile);
 				sftpService.removeFile(sftpFile);
 				try {
 					// Wait between SFTP requests to avoid failures

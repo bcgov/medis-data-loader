@@ -1,11 +1,13 @@
 package ca.bc.gov.hlth.medis.batch.listener;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.annotation.AfterJob;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,21 @@ import org.springframework.stereotype.Component;
 import ca.bc.gov.hlth.medis.service.EmailService;
 
 @Component
-public class MedisJobExecutionListener implements org.springframework.batch.core.JobExecutionListener  {
+public class MedisJobExecutionListener implements JobExecutionListener  {
 	private static final Logger logger = LoggerFactory.getLogger(MedisJobExecutionListener.class);
+	
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
+	private static final String EMAIL_FROM = "medis-data-loader@gov.bc.ca";
 	
 	@Autowired
 	private EmailService emailService;
 	
 	@Value("${mail.enabled}")
 	private Boolean mailEnabled;
+	
+	@Value("${mail.recipients}")
+	private String mailRecipients;
 	
 	@AfterJob
 	@SuppressWarnings("unchecked")
@@ -32,17 +41,26 @@ public class MedisJobExecutionListener implements org.springframework.batch.core
 			return;
 		}
 
-		if (jobExecution.getStatus() == BatchStatus.FAILED) {
-			emailService.sendNotificationEmail("test@medis-data-loader.com", "wes.kubo@cgi.com", "FAILED", "FAILED");				
+		if (jobExecution.getStatus() == BatchStatus.FAILED) {			
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("MEDIS data load run at " + jobExecution.getStartTime().format(formatter) + " failed");
+			sb.append("\n\nAutomatically generated message in case of failure.");
+			// TODO Contact SPOC?
+			emailService.sendNotificationEmail(EMAIL_FROM, mailRecipients, "MEDIS data load run FAILED!", sb.toString());
 	    }
 		
 		if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
 			ExecutionContext executionContext = jobExecution.getExecutionContext();
 			List<String> importFiles = (List<String>) executionContext.get("importFiles");
 			if (importFiles != null && !importFiles.isEmpty()) {
-				emailService.sendNotificationEmail("test@medis-data-loader.com", "wes.kubo@cgi.com", "SUCCESS", "SUCCESS");	
+				StringBuilder sb = new StringBuilder();
+
+				sb.append("MEDIS data load run at " + jobExecution.getStartTime().format(formatter) + " succeeded");
+				sb.append("\n\nAutomatically generated message in case of success.");
+				emailService.sendNotificationEmail(EMAIL_FROM, mailRecipients, "MEDIS data load run SUCCEEDED!", sb.toString());	
 			}
 		}
 	}
-	
+
 }

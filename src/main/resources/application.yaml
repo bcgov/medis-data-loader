@@ -28,7 +28,7 @@ spring:
             format_sql: false
 
 batch:
-   cron:
+   cron: 0 0 * * * *
    
 mail:
    enabled: false
