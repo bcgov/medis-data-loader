@@ -18,8 +18,8 @@ spring:
    h2:
       datasource:
          driverClassName: org.h2.Driver
-         username: 
-         password: 
+         username: medis
+         password: medis
 
    jpa:
       show-sql: false
