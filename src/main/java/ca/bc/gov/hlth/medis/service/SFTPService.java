@@ -31,8 +31,8 @@ public class SFTPService {
 	@Value("${sftp.key.file}")
 	private String keyFile;
 	
-	@Value("${sftp.import-directory}")
-	private String importDirectory;
+	@Value("${sftp.local-directory}")
+	private String localDirectory;
 
 	public void removeFile(String fileName) {
 		try (SSHClient sshClient = setupSshj();
@@ -87,7 +87,7 @@ public class SFTPService {
 		// Get the double extension (.zip.gpg)
 		String extension = StringUtils.substringAfter(fileName, SEPARATOR);
 		
-		File tempFile = Files.createTempFile(Paths.get(importDirectory),prefix, SEPARATOR + extension).toFile();
+		File tempFile = Files.createTempFile(Paths.get(localDirectory),prefix, SEPARATOR + extension).toFile();
 		tempFile.deleteOnExit();
 		
 		return tempFile;		

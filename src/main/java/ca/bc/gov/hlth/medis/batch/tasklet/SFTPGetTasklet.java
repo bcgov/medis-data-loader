@@ -18,6 +18,7 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import ca.bc.gov.hlth.medis.service.PGPService;
 import ca.bc.gov.hlth.medis.service.SFTPService;
@@ -33,6 +34,10 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 	private static final String DOMAIN_VALUES = "_domain_values_";
 	
 	private static final String SFTP_FILE_EXTENSION = ".gz.gpg";
+	
+	
+	@Value("${sftp.local-directory}")
+	private String localDirectory;
 
 	@Autowired
 	private PGPService pgpService;
@@ -47,11 +52,18 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws IOException {
 		JobParameters jobParameters = chunkContext.getStepContext().getStepExecution().getJobParameters();
 
-		String sftpDirectory = jobParameters.getString("sftpDirectory");
+		String remoteDirectory = jobParameters.getString("remoteDirectory");
 		String flagFileName = jobParameters.getString("flagFile");
+
+		// Cleanup all import files in case of abnormal termination or failed cleanup
+		try {
+			FileUtils.cleanDirectory(new File(localDirectory));
+		} catch (IOException e) {
+			logger.warn("Could not clean import directory");
+		}
 		
 		// Load the flag file
-		File flagFile = sftpService.getFile(sftpDirectory + flagFileName);
+		File flagFile = sftpService.getFile(remoteDirectory + flagFileName);
 		if (flagFile == null) {
 			logger.warn("No flag file found");
 			return RepeatStatus.FINISHED;
@@ -62,7 +74,7 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		
 		// List of SFTP files for deletion
 		List<String> sftpFiles = new ArrayList<String>();
-		sftpFiles.add(sftpDirectory + flagFileName);
+		sftpFiles.add(remoteDirectory + flagFileName);
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(flagFile))) {
 			String line;
@@ -70,7 +82,7 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 				
 				Boolean domainFile = line.contains(DOMAIN_VALUES); 
 				
-				String importFileName = sftpDirectory + line;
+				String importFileName = remoteDirectory + line;
 				if (!domainFile) {
 					// Include the extension for all files but *_domain_values
 					importFileName += SFTP_FILE_EXTENSION;	

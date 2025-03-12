@@ -36,8 +36,8 @@ public class MedisJobExecutionListener implements JobExecutionListener  {
 	@Value("${mail.recipients}")
 	private String mailRecipients;
 	
-	@Value("${sftp.import-directory}")
-	private String importDirectory;
+	@Value("${sftp.local-directory}")
+	private String localDirectory;
 	
 	@AfterJob
 	@SuppressWarnings("unchecked")
@@ -47,7 +47,7 @@ public class MedisJobExecutionListener implements JobExecutionListener  {
 		
 		// Cleanup all import files
 		try {
-			FileUtils.cleanDirectory(new File(importDirectory));
+			FileUtils.cleanDirectory(new File(localDirectory));
 		} catch (IOException e) {
 			logger.warn("Could not clean import directory");
 		}

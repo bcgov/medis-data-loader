@@ -28,8 +28,8 @@ public class PGPService {
 	@Value("${pgp.key.file:0}")
 	private String keyFile;
 	
-	@Value("${sftp.import-directory}")
-	private String importDirectory;
+	@Value("${sftp.local-directory}")
+	private String localDirectory;
 	
 	public File decrypt(File encryptedFile) {
 		SOP sop = new SOPImpl();
@@ -63,7 +63,7 @@ public class PGPService {
 		// Get the double extension (.zip.gpg)
 		String extension = StringUtils.substringAfter(decryptedFileName, SEPARATOR);
 		
-		File tempFile = Files.createTempFile(Paths.get(importDirectory), prefix, SEPARATOR + extension).toFile();
+		File tempFile = Files.createTempFile(Paths.get(localDirectory), prefix, SEPARATOR + extension).toFile();
 		tempFile.deleteOnExit();
 		
 		return tempFile;

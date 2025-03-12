@@ -24,8 +24,8 @@ public class BatchScheduler {
 	@Autowired
 	private Job importJob;
 	
-	@Value("${sftp.directory}")
-	private String sftpDirectory;
+	@Value("${sftp.remote-directory}")
+	private String remoteDirectory;
 	
 	@Value("${sftp.flag-file}")
 	private String flagFile;
@@ -36,7 +36,7 @@ public class BatchScheduler {
 		
 		JobParameters params = new JobParametersBuilder()
 				.addString("JobID", String.valueOf(System.currentTimeMillis()))
-				.addString("sftpDirectory", sftpDirectory)
+				.addString("remoteDirectory", remoteDirectory)
 				.addString("flagFile", flagFile)
 				.toJobParameters();
 		JobExecution execution = jobLauncher.run(importJob, params);

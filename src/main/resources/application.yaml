@@ -32,13 +32,15 @@ batch:
    
 mail:
    enabled: false
+   recipients: 
    
 sftp:
    hostname: 
    key: 
       username:  
       file: 
-   directory: 
+   remote-directory:
+   local-directory: 
    flag-file: 
    
 pgp:
