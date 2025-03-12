@@ -23,13 +23,13 @@ public class LtcYtdCompBenefits extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "BENEFITS_TYPE")
 	private String benefitsType;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "BENEFITS_AMOUNT_YTD")
 	private BigDecimal benefitsAmountYtd;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "BENEFITS_PERCENTAGE_ALLOC")
 	private BigDecimal benefitsPercentageAlloc;
-		
+
 }

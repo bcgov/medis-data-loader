@@ -23,27 +23,25 @@ public class LtcBedYtdOccupiedDays extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "OCC_QUARTER")
 	private String occQuarter;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "OCC_MONTH")
 	private String occMonth;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "OCC_DAYS_YTD_IN_SCOPE_PUBLIC")
 	private BigDecimal occDaysYTDInScopePublic;
-	
+
 	@CsvBindByPosition(position = 4)
 	@Column(name = "OCC_DAYS_YTD_OUT_SCOPE_PUBLIC")
 	private BigDecimal occDaysYTOutScopePublic;
-	
+
 	@CsvBindByPosition(position = 5)
 	@Column(name = "OCC_DAYS_YTD_PRIVATE")
 	private BigDecimal occDaysYTDPrivate;
-	
+
 	@CsvBindByPosition(position = 6)
 	@Column(name = "OCC_DAYS_YTD_TOTAL_DAYS")
 	private BigDecimal occDaysYtdTotalDays;
-	
 
-		
 }

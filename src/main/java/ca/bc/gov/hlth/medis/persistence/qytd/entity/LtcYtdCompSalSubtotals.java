@@ -23,15 +23,15 @@ public class LtcYtdCompSalSubtotals extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "COMP_SAL_TYPE")
 	private String compSalType;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "SUB_TOT_COMP_SAL_STAFF_YTD")
 	private BigDecimal subTotalCompSalStaffYTD;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "SUB_TOT_COMP_SAL_CON_SER_YTD")
 	private BigDecimal subTotalCompSalContractServicesYTD;
-	
+
 	@CsvBindByPosition(position = 4)
 	@Column(name = "SUB_TOT_COMP_SAL_TOT_COST_YTD")
 	private BigDecimal subTotalCompSalTotalCostYTD;

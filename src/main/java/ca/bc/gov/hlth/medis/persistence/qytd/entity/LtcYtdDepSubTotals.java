@@ -23,8 +23,8 @@ public class LtcYtdDepSubTotals extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "SUB_TOTAL_DEP_YTD")
 	private BigDecimal subTotalDepYtd;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "SUB_TOTAL_DEP_NOTES")
 	private String subTotalDepNotes;
-	}
+}

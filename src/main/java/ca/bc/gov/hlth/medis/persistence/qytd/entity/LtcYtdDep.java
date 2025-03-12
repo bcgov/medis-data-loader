@@ -2,7 +2,7 @@ package ca.bc.gov.hlth.medis.persistence.qytd.entity;
 
 import java.math.BigDecimal;
 
-import com.opencsv.bean.CsvBindByPosition; 
+import com.opencsv.bean.CsvBindByPosition;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,12 +23,12 @@ public class LtcYtdDep extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "DEP_NAME")
 	private String depName;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "DEP_YTD")
 	private BigDecimal depYtd;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "DEP_NOTES")
 	private String depNotes;
-	}
+}

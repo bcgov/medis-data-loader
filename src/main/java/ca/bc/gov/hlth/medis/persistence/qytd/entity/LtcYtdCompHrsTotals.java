@@ -23,18 +23,17 @@ public class LtcYtdCompHrsTotals extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "COMP_HRS_TOTAL_TYPE")
 	private String compHrsTotalType;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "TOTAL_COMP_HRS_STAFF_YTD")
 	private BigDecimal totalCompHrsStaffYTD;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "TOTAL_COMP_HRS_CON_SER_YTD")
 	private BigDecimal totalCompHrsContractServicesYTD;
-	
+
 	@CsvBindByPosition(position = 4)
 	@Column(name = "TOTAL_COMP_TOT_WRK_HRS_YTD")
 	private BigDecimal totalCompTotalWorkedHrsYTD;
-	
-		
+
 }

@@ -23,21 +23,21 @@ public class LtcBedYtdOccupancyRateTotals extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "OCC_RATE_QUARTER")
 	private String occRateQuarter;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "TOT_PLAN_MAX_OCC_DAYS")
 	private BigDecimal totalPlanMaxOccDays;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "TOT_YTD_MAX_OCC_DAYS")
 	private BigDecimal totalYTDMaxOccDays;
-	
+
 	@CsvBindByPosition(position = 4)
 	@Column(name = "TOT_YTD_OCC_DAYS")
 	private BigDecimal totalYTDOccDays;
-	
+
 	@CsvBindByPosition(position = 5)
 	@Column(name = "TOT_PERCENT_OCC")
 	private BigDecimal totalPercentOcc;
-	
+
 }

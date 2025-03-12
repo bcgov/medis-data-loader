@@ -23,23 +23,23 @@ public class LtcYtdCompSal extends BaseEntity {
 	@CsvBindByPosition(position = 1)
 	@Column(name = "COMP_SAL_TYPE")
 	private String compSalType;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "COMP_SAL_NAME")
 	private String compSalName;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "COMP_SAL_STAFF_YTD")
 	private BigDecimal compSalStaffYtd;
-	
+
 	@CsvBindByPosition(position = 4)
 	@Column(name = "COMP_SAL_CONTRACT_SERVICES_YTD")
 	private BigDecimal compSalContractServicesYtd;
-	
+
 	@CsvBindByPosition(position = 5)
 	@Column(name = "COMP_SAL_TOTAL_COST_YTD")
 	private BigDecimal compSalTotalCostYtd;
-	
+
 	@CsvBindByPosition(position = 6)
 	@Column(name = "COMP_SAL_OTHER_NAME")
 	private String compSalOtherName;

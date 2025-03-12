@@ -23,47 +23,45 @@ public class LtcBedYtdMaxOccupancy extends BaseEntity {
 	@Column(name = "LTCFBYMO_ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
-	
+
 	@CsvBindByPosition(position = 1)
 	@Column(name = "BED_INDEX")
 	private String bedIndex;
-	
+
 	@CsvBindByPosition(position = 2)
 	@Column(name = "QUARTER_INVENTORY")
 	private String quarterInventory;
-	
+
 	@CsvBindByPosition(position = 3)
 	@Column(name = "BED_FUNDING_TYPE")
 	private String bedFundingType;
-	
+
 	@CsvBindByPosition(position = 4)
 	@Column(name = "BED_SUBTYPE")
 	private String bedSubype;
-	
+
 	@CsvBindByPosition(position = 5)
 	@CsvDate(value = "yyyyMMddHHmmss")
 	@Column(name = "START_DATE")
 	@Temporal(TemporalType.DATE)
 	private Date startDate;
-	
+
 	@CsvBindByPosition(position = 6)
 	@CsvDate(value = "yyyyMMddHHmmss")
 	@Column(name = "END_DATE")
 	@Temporal(TemporalType.DATE)
 	private Date endDate;
-	
+
 	@CsvBindByPosition(position = 7)
 	@Column(name = "NUMBER_OF_BEDS")
 	private BigDecimal numberOfBeds;
-	
+
 	@CsvBindByPosition(position = 8)
 	@Column(name = "MAXIMUM_BED_DAYS")
 	private BigDecimal maximumBedDays;
-	
+
 	@CsvBindByPosition(position = 9)
 	@Column(name = "NOTES")
-	private String notes;	
+	private String notes;
 
-	
-	
 }
