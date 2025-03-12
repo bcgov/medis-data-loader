@@ -33,10 +33,10 @@ public class LtcBedYtdOccupiedDaysTotals extends BaseEntity {
 
 	@CsvBindByPosition(position = 4)
 	@Column(name = "TOT_OCC_DAYS_YTD_PRIVATE")
-	private BigDecimal occDaysYTDTotalDays;
+	private BigDecimal occDaysYTDPrivate;
 
 	@CsvBindByPosition(position = 5)
 	@Column(name = "TOT_OCC_DAYS_YTD_TOT_DAYS")
-	private BigDecimal occDaysYTDPrivate;
+	private BigDecimal occDaysYTDTotalDays;
 
 }

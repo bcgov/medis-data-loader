@@ -98,14 +98,4 @@ public class LtcYtdSubmission extends BaseEntity {
 	@Column(name = "NB_TOT_BEDS_INCL_OUT_OF_SCOPE")
 	private BigDecimal nbTotalBedsInclOutOfScope;
 
-	@Override
-	public String toString() {
-		return "LtcYtdSubmission [id=" + id + ", isDeleted=" + isDeleted + ", submissionDate=" + submissionDate + ", submittedBy=" + submittedBy + ", submissionStatus=" + submissionStatus
-				+ ", CCIMSID=" + CCIMSID + ", submissionType=" + submissionType + ", period=" + period + ", submissionFy=" + submissionFy + ", nbTotalBeds=" + nbTotalBeds + ", nbInScopeBeds="
-				+ nbInScopeBeds + ", occRateThreshold=" + occRateThreshold + ", totalBenefits=" + totalBenefits + ", totalSalariesWages=" + totalSalariesWages + ", benefitsPercent=" + benefitsPercent
-				+ ", totalVacancies=" + totalVacancies + ", nbOutOfScopeBeds=" + nbOutOfScopeBeds + ", nbPrivateBeds=" + nbPrivateBeds + ", nbTotalBedsInclOutOfScope=" + nbTotalBedsInclOutOfScope
-				+ ", confirmationId=" + confirmationId + ", createUser=" + createUser + ", createDateTime=" + createDateTime + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
-				+ ", toString()=" + super.toString() + "]";
-	}
-
 }
