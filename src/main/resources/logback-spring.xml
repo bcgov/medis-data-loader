@@ -41,7 +41,7 @@
         <appender-ref ref="Console"/>
     </root>
     
-    <logger name="net.schmizz.sshj.transport" level="WARN"/>
+    <logger name="net.schmizz.sshj" level="WARN"/>
     
     <logger name="net.schmizz.sshj.xfer.FileSystemFile" level="ERROR"/>
     

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,9 @@ public class PGPService {
 	
 	@Value("${pgp.key.file:0}")
 	private String keyFile;
+	
+	@Value("${sftp.import-directory}")
+	private String importDirectory;
 	
 	public File decrypt(File encryptedFile) {
 		SOP sop = new SOPImpl();
@@ -58,7 +63,10 @@ public class PGPService {
 		// Get the double extension (.zip.gpg)
 		String extension = StringUtils.substringAfter(decryptedFileName, SEPARATOR);
 		
-		return File.createTempFile(prefix, SEPARATOR + extension);
+		File tempFile = Files.createTempFile(Paths.get(importDirectory), prefix, SEPARATOR + extension).toFile();
+		tempFile.deleteOnExit();
+		
+		return tempFile;
 	}
 	
 }

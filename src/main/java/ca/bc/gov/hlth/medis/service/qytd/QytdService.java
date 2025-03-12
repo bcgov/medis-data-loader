@@ -61,10 +61,11 @@ public class QytdService {
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void load(File file) throws IOException {
-		// Strip the timestamp for file matching
-		String fileName = StringUtils.substringBeforeLast(file.getName(), "_");
+		// Strip the timestamp and guid for file matching
+		String fileNameWithoutGuid = StringUtils.substringBeforeLast(file.getName(), "_");
+		String fileName = StringUtils.substringBeforeLast(fileNameWithoutGuid, "_");
 
-		logger.info("Importing file " + fileName);
+		logger.info("Importing file " + file.getName());
 
 		try (FileReader reader = new FileReader(file)) {
 			

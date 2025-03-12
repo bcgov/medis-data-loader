@@ -1,7 +1,5 @@
 package ca.bc.gov.hlth.medis.batch.tasklet;
 
-import static ca.bc.gov.hlth.medis.util.Constants.SFTP_WAIT;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParameters;
@@ -31,6 +30,8 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SFTPGetTasklet.class);
 	
+	private static final String DOMAIN_VALUES = "_domain_values_";
+	
 	private static final String SFTP_FILE_EXTENSION = ".gz.gpg";
 
 	@Autowired
@@ -48,7 +49,6 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 
 		String sftpDirectory = jobParameters.getString("sftpDirectory");
 		String flagFileName = jobParameters.getString("flagFile");
-
 		
 		// Load the flag file
 		File flagFile = sftpService.getFile(sftpDirectory + flagFileName);
@@ -67,7 +67,15 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		try (BufferedReader reader = new BufferedReader(new FileReader(flagFile))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				String importFileName = sftpDirectory + line + SFTP_FILE_EXTENSION;
+				
+				Boolean domainFile = line.contains(DOMAIN_VALUES); 
+				
+				String importFileName = sftpDirectory + line;
+				if (!domainFile) {
+					// Include the extension for all files but *_domain_values
+					importFileName += SFTP_FILE_EXTENSION;	
+				}
+				
 				logger.info("Found import file: {}", importFileName);
 				
 				sftpFiles.add(importFileName);
@@ -76,25 +84,25 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 				File importFile = sftpService.getFile(importFileName);
 				logger.debug("got file {}", importFile.getAbsolutePath());
 				
-				// Decrypt
-				File decryptedFile = decrypt(importFile);				
-				logger.debug("decrypted file {} ", decryptedFile.getAbsolutePath());
-				
-				// Unzip
-				File unzippedFile = unzip(decryptedFile);
-				logger.debug("unzipped file {}", unzippedFile.getAbsolutePath());
-				
-				importFiles.add(unzippedFile);
-				
-				// Wait between SFTP requests to avoid failures
-				Thread.sleep(SFTP_WAIT);
+				if (!domainFile) {					
+					// Decrypt
+					File decryptedFile = decrypt(importFile);				
+					logger.debug("decrypted file {} ", decryptedFile.getAbsolutePath());
+					
+					// Unzip
+					File unzippedFile = unzip(decryptedFile);
+					logger.debug("unzipped file {}", unzippedFile.getAbsolutePath());
+					
+					importFiles.add(unzippedFile);
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Could not transfer files", e);
+			throw e;
 		}
 
 		ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
-		
+
 		executionContext.put("importFiles", importFiles);
 		executionContext.put("sftpFiles", sftpFiles);
 
@@ -105,10 +113,10 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		if (zippedFile == null) {
 			return null;
 		}
-		File unzippedFile = zipService.unzip(zippedFile);
+		File unzippedFile = zipService.unzip2(zippedFile);
 
 		// Delete the zipped file as it's no longer required
-		zippedFile.delete();
+		FileUtils.deleteQuietly(zippedFile);
 
 		return unzippedFile;
 
@@ -121,7 +129,7 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		File decryptedFile = pgpService.decrypt(encryptedFile);
 
 		// Delete the encrypted temp file as it's no longer required
-		encryptedFile.delete();
+		FileUtils.deleteQuietly(encryptedFile);
 		
 		return decryptedFile;
 	}

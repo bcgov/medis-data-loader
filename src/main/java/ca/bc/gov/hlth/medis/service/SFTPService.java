@@ -2,8 +2,8 @@ package ca.bc.gov.hlth.medis.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +30,9 @@ public class SFTPService {
 	
 	@Value("${sftp.key.file}")
 	private String keyFile;
+	
+	@Value("${sftp.import-directory}")
+	private String importDirectory;
 
 	public void removeFile(String fileName) {
 		try (SSHClient sshClient = setupSshj();
@@ -51,30 +54,31 @@ public class SFTPService {
 		    return tempFile;
 		} catch (IOException e) {
 			logger.warn("Could not get file {} from SFTP server. {}", fileName, e.getMessage());
-			return null;
-		}
-	}
-	
-	public List<File> getFiles(List<String> fileNames) {
-		List<File> files = new ArrayList<File>();
-		try (SSHClient sshClient = setupSshj(); SFTPClient sftpClient = sshClient.newSFTPClient()) {
-			
-			for (String fileName: fileNames) {
-				// All files need to be downloaded to a file to create a temp file and delete it later
-				File tempFile = generateTempFile(fileName);
-			    
-			    sftpClient.get(fileName, tempFile.getAbsolutePath());
-			    logger.info("Downloaded file {} from SFTP server to temp file {}.", fileName, tempFile.getAbsoluteFile());
-			    files.add(tempFile);
-			}
-	
-		    return files;
-		} catch (IOException e) {
 			e.printStackTrace();
-			//logger.warn("Could not get file {} from SFTP server. {}", fileName, e.getMessage());
 			return null;
 		}
 	}
+	
+//	public List<File> getFiles(List<String> fileNames) {
+//		List<File> files = new ArrayList<File>();
+//		try (SSHClient sshClient = setupSshj(); SFTPClient sftpClient = sshClient.newSFTPClient()) {
+//			
+//			for (String fileName: fileNames) {
+//				// All files need to be downloaded to a file to create a temp file and delete it later
+//				File tempFile = generateTempFile(fileName);
+//			    
+//			    sftpClient.get(fileName, tempFile.getAbsolutePath());
+//			    logger.info("Downloaded file {} from SFTP server to temp file {}.", fileName, tempFile.getAbsoluteFile());
+//			    files.add(tempFile);
+//			}
+//	
+//		    return files;
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			logger.warn("Could not get file {} from SFTP server. {}", fileName, e.getMessage());
+//			return null;
+//		}
+//	}
 
 	private File generateTempFile(String fileName) throws IOException {
 		// Get the file name with no extension (e.g. foo from foo.zip.gpg)
@@ -82,7 +86,11 @@ public class SFTPService {
 
 		// Get the double extension (.zip.gpg)
 		String extension = StringUtils.substringAfter(fileName, SEPARATOR);
-	    return File.createTempFile(prefix, SEPARATOR + extension);		
+		
+		File tempFile = Files.createTempFile(Paths.get(importDirectory),prefix, SEPARATOR + extension).toFile();
+		tempFile.deleteOnExit();
+		
+		return tempFile;		
 	}
 
 	private SSHClient setupSshj() throws IOException {

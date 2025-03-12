@@ -1,8 +1,5 @@
 package ca.bc.gov.hlth.medis.batch.tasklet;
 
-import static ca.bc.gov.hlth.medis.util.Constants.SFTP_WAIT;
-
-import java.io.File;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,34 +26,17 @@ public class DeleteFilesTasklet implements Tasklet {
 	@SuppressWarnings("unchecked")
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
+		logger.info("running deleteFiles tasklet");
 
 		ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
-
-		// Remove local files
-		List<File> importFiles = (List<File>) executionContext.get("importFiles");
-		if (importFiles != null) {
-			logger.debug("Found {} Temp files to delete", importFiles.size());
-			importFiles.forEach(file -> {
-				logger.debug("Deleting Temp file {}", file);
-				file.delete();
-			});
-		}
 		
-		// Remove SFTP files
+		// Remove SFTP files on successful execution
 		List<String> sftpFiles = (List<String>) executionContext.get("sftpFiles");
-		if (sftpFiles != null) {
-			logger.debug("Found {} SFTP files to delete", sftpFiles.size());
-			sftpFiles.forEach(sftpFile -> {
-				logger.debug("Deleting SFTP file {}", sftpFile);
-				sftpService.removeFile(sftpFile);
-				try {
-					// Wait between SFTP requests to avoid failures
-					Thread.sleep(SFTP_WAIT);
-				} catch (InterruptedException e) {
-					logger.warn(e.getMessage());
-				}
-			});
-		}
+		logger.debug("Found {} SFTP files to delete", sftpFiles.size());
+		sftpFiles.forEach(sftpFile -> {
+			logger.debug("Deleting SFTP file {}", sftpFile);
+			sftpService.removeFile(sftpFile);
+		});
 
 		return RepeatStatus.FINISHED;
 	}
