@@ -113,7 +113,7 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		if (zippedFile == null) {
 			return null;
 		}
-		File unzippedFile = zipService.unzip2(zippedFile);
+		File unzippedFile = zipService.unzip(zippedFile);
 
 		// Delete the zipped file as it's no longer required
 		FileUtils.deleteQuietly(zippedFile);
