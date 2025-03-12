@@ -158,6 +158,8 @@ public class QytdService {
 		} catch (Exception e) {
 			logger.error("Could not import file " + fileName, e);
 			throw e;
+		} finally {
+			file.delete();
 		}
 	}
 
