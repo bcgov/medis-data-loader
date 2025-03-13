@@ -1,0 +1,50 @@
+spring:
+   application:
+      name: medis-data-loader
+
+   batch:
+      job:
+         enabled: false
+
+   main:
+      web-application-type: none
+  
+   datasource:
+      driver-class-name: oracle.jdbc.OracleDriver
+      url: 
+      username: 
+      password: 
+      
+   h2:
+      datasource:
+         driverClassName: org.h2.Driver
+         username: medis
+         password: medis
+
+   jpa:
+      show-sql: false
+      properties:
+         hibernate:
+            format_sql: false
+
+batch:
+   cron: 0 0 * * * *
+   
+mail:
+   enabled: false
+   recipients: 
+   
+sftp:
+   hostname: 
+   key: 
+      username:  
+      file: 
+   remote-directory:
+   local-directory: 
+   flag-file: 
+   
+pgp:
+   key:
+      file: 
+
+
