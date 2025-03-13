@@ -45,6 +45,6 @@
     
     <logger name="net.schmizz.sshj.xfer.FileSystemFile" level="ERROR"/>
     
-    <logger name="ca.bc.gov.hlth.medis" level="DEBUG"/>
+    <logger name="ca.bc.gov.hlth.medis" level="INFO"/>
 
 </configuration>

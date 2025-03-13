@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ca.bc.gov.hlth.medis.service.SFTPService;
 
 /**
- * Tasklet to delete files from SFTP server once the files have been processed.
+ * Tasklet to perform cleanup once the job has run.
  */
-public class DeleteFilesTasklet implements Tasklet {
+public class CleanupTasklet implements Tasklet {
 
-	private static final Logger logger = LoggerFactory.getLogger(DeleteFilesTasklet.class);
+	private static final Logger logger = LoggerFactory.getLogger(CleanupTasklet.class);
 	
 	@Autowired
 	private SFTPService sftpService;
@@ -26,17 +26,17 @@ public class DeleteFilesTasklet implements Tasklet {
 	@SuppressWarnings("unchecked")
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
-		logger.info("running deleteFiles tasklet");
-
 		ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
 		
 		// Remove SFTP files on successful execution
 		List<String> sftpFiles = (List<String>) executionContext.get("sftpFiles");
-		logger.debug("Found {} SFTP files to delete", sftpFiles.size());
-		sftpFiles.forEach(sftpFile -> {
-			logger.debug("Deleting SFTP file {}", sftpFile);
-			sftpService.removeFile(sftpFile);
-		});
+		if (sftpFiles != null) {
+			logger.debug("Found {} SFTP files to delete", sftpFiles.size());
+			sftpFiles.forEach(sftpFile -> {
+				logger.debug("Deleting SFTP file {}", sftpFile);
+				sftpService.removeFile(sftpFile);
+			});			
+		}
 
 		return RepeatStatus.FINISHED;
 	}

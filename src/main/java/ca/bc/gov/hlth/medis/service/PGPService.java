@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pgpainless.sop.SOPImpl;
@@ -31,11 +32,19 @@ public class PGPService {
 	@Value("${sftp.local-directory}")
 	private String localDirectory;
 	
-	public File decrypt(File encryptedFile) {
+	public File decrypt(File encryptedFile) throws IllegalArgumentException, IOException {
+		if (encryptedFile == null) {
+			throw new IllegalArgumentException("No file provided");
+		}
+	    File decryptedFile = generateTempFile(encryptedFile);
+	    
 		SOP sop = new SOPImpl();
 		// decrypt a message and verify its signature(s)
 		File secretKeyFile = new File(keyFile);
-		try (FileInputStream keyIS = new FileInputStream(secretKeyFile); FileInputStream fileIS =  new FileInputStream(encryptedFile)) {
+		FileInputStream keyIS = new FileInputStream(secretKeyFile);
+		FileInputStream fileIS =  new FileInputStream(encryptedFile);
+		FileOutputStream fileOS = new FileOutputStream(decryptedFile);
+		try (keyIS; fileIS; fileOS) {
 			byte[] secretKey = keyIS.readAllBytes();
 
 			byte[] ciphertext = fileIS.readAllBytes();
@@ -44,12 +53,15 @@ public class PGPService {
 			        .withKey(secretKey)
 			        .ciphertext(ciphertext);
 
-		    File decryptedFile = generateTempFile(encryptedFile);
-			readyWithResult.writeTo(new FileOutputStream(decryptedFile));
+
+			readyWithResult.writeTo(fileOS);
 			return decryptedFile;
 		} catch (IOException e) {
 			logger.error("Could not decrypt file {}. {}", encryptedFile.getName(), e.getMessage());
 			return null;
+		} finally {
+			// Delete the encrypted temp file as it's no longer required
+			FileUtils.deleteQuietly(encryptedFile);
 		}
 	}
 	

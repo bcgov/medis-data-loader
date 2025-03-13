@@ -32,8 +32,6 @@ public class BatchScheduler {
 
 	@Scheduled(cron = "${batch.cron}")
 	public void schedule() throws Exception {
-		logger.info("Running job");
-		
 		JobParameters params = new JobParametersBuilder()
 				.addString("JobID", String.valueOf(System.currentTimeMillis()))
 				.addString("remoteDirectory", remoteDirectory)

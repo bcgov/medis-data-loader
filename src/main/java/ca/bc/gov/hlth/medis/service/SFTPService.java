@@ -54,7 +54,6 @@ public class SFTPService {
 		    return tempFile;
 		} catch (IOException e) {
 			logger.warn("Could not get file {} from SFTP server. {}", fileName, e.getMessage());
-			e.printStackTrace();
 			return null;
 		}
 	}

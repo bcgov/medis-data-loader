@@ -3,11 +3,9 @@ package ca.bc.gov.hlth.medis.batch.tasklet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParameters;
@@ -18,7 +16,6 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import ca.bc.gov.hlth.medis.service.PGPService;
 import ca.bc.gov.hlth.medis.service.SFTPService;
@@ -35,10 +32,6 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 	
 	private static final String SFTP_FILE_EXTENSION = ".gz.gpg";
 	
-	
-	@Value("${sftp.local-directory}")
-	private String localDirectory;
-
 	@Autowired
 	private PGPService pgpService;
 	
@@ -49,18 +42,11 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 	private ZipService zipService;	
 	
 	@Override
-	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws IOException {
+	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		JobParameters jobParameters = chunkContext.getStepContext().getStepExecution().getJobParameters();
 
 		String remoteDirectory = jobParameters.getString("remoteDirectory");
 		String flagFileName = jobParameters.getString("flagFile");
-
-		// Cleanup all import files in case of abnormal termination or failed cleanup
-		try {
-			FileUtils.cleanDirectory(new File(localDirectory));
-		} catch (IOException e) {
-			logger.warn("Could not clean import directory");
-		}
 		
 		// Load the flag file
 		File flagFile = sftpService.getFile(remoteDirectory + flagFileName);
@@ -98,11 +84,11 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 				
 				if (!domainFile) {					
 					// Decrypt
-					File decryptedFile = decrypt(importFile);				
+					File decryptedFile = pgpService.decrypt(importFile);				
 					logger.debug("decrypted file {} ", decryptedFile.getAbsolutePath());
 					
 					// Unzip
-					File unzippedFile = unzip(decryptedFile);
+					File unzippedFile = zipService.unzip(decryptedFile);
 					logger.debug("unzipped file {}", unzippedFile.getAbsolutePath());
 					
 					importFiles.add(unzippedFile);
@@ -111,6 +97,8 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		} catch (Exception e) {
 			logger.error("Could not transfer files", e);
 			throw e;
+		} finally {
+			flagFile.delete();
 		}
 
 		ExecutionContext executionContext = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
@@ -119,31 +107,6 @@ public class SFTPGetTasklet implements Tasklet, InitializingBean  {
 		executionContext.put("sftpFiles", sftpFiles);
 
 		return RepeatStatus.FINISHED;
-	}
-
-	private File unzip(File zippedFile) throws IOException {
-		if (zippedFile == null) {
-			return null;
-		}
-		File unzippedFile = zipService.unzip(zippedFile);
-
-		// Delete the zipped file as it's no longer required
-		FileUtils.deleteQuietly(zippedFile);
-
-		return unzippedFile;
-
-	}
-	
-	public File decrypt(File encryptedFile) {
-		if (encryptedFile == null) {
-			return null;
-		}
-		File decryptedFile = pgpService.decrypt(encryptedFile);
-
-		// Delete the encrypted temp file as it's no longer required
-		FileUtils.deleteQuietly(encryptedFile);
-		
-		return decryptedFile;
 	}
 
 	@Override
